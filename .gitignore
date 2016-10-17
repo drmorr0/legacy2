@@ -1,0 +1,35 @@
+# Ignore common code files
+*.a
+*.so
+*.d
+*.o
+*.debug
+gmon.out
+*_d
+
+# Ignore common LaTeX files
+*.pdf
+*.log
+*.aux
+*.bbl
+*.blg
+*.bak
+*.swp
+*.toc
+*.lof
+*.nav
+*.snm
+*.out
+*~
+
+# CMake output
+CMakeCache.txt
+CMakeFiles
+Makefile
+cmake_install.cmake
+
+# Miscellaneous
+.svn
+
+# Put your stuff here
+__pycache__
