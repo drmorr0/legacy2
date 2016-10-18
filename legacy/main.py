@@ -6,6 +6,7 @@ import sqlite3 as sql
 import sys
 
 from bokeh.models import Div
+from bokeh.models import Row
 from bokeh.plotting import curdoc
 
 def handle_request():

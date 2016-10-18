@@ -1,8 +1,10 @@
 
 from categories import make_category_select
 from categories import SHORT_CATEGORY_DICT
+from filter_widget import make_filter_widget
 
-from bokeh.layouts import column 
+from bokeh.layouts import Column 
+from bokeh.layouts import Row
 from bokeh.models import CustomJS
 from bokeh.models import Range1d
 from bokeh.models import Slider
@@ -15,13 +17,14 @@ def make_time_series_plot(church_data, prop, *, width=1000, height=600):
     max_year = church_data['year'].max()
     min_prop = 0
     max_prop = church_data[prop].max()
+    prop_string = SHORT_CATEGORY_DICT[prop]
 
     plot = Figure(
         width=width,
         height=height,
-        title=prop, 
+        title=prop_string + " over time", 
         x_axis_label='Year', 
-        y_axis_label=SHORT_CATEGORY_DICT[prop],
+        y_axis_label=prop_string,
         x_range=Range1d(min_year, max_year),
         y_range=Range1d(min_prop, max_prop),
         tools="save",
@@ -46,7 +49,7 @@ def make_time_series_plot(church_data, prop, *, width=1000, height=600):
         end=max_prop, 
         value=max_prop, 
         step=(max_prop-min_prop)/100, 
-        title=SHORT_CATEGORY_DICT[prop],
+        title=prop_string,
         callback=prop_range_callback,
     )
 
@@ -60,4 +63,10 @@ def make_time_series_plot(church_data, prop, *, width=1000, height=600):
         callback=year_range_callback,
     )
 
-    return column(make_category_select(prop), plot, prop_slider, year_slider)
+    return Column(
+        make_category_select(prop), 
+        make_filter_widget(),
+        plot, 
+        prop_slider, 
+        year_slider
+    )

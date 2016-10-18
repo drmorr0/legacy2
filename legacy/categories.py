@@ -1,7 +1,6 @@
 
 from bokeh.models import CustomJS
 from bokeh.models import Select
-from bokeh.plotting import curdoc
 
 SHORT_CATEGORY_DICT = {
     "MEMBTOT": "Total Membership",
@@ -11,7 +10,8 @@ SHORT_CATEGORY_DICT = {
 
 def make_category_select(selected_prop):
 
-    category_select_cb = CustomJS(code="""
+    category_select_cb = CustomJS(code=
+    """
         var url = window.location.href.split('?')[0];
         window.location.href = url + "?prop=" + cb_obj.value
     """
