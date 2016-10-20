@@ -10,12 +10,7 @@ SHORT_CATEGORY_DICT = {
 
 def make_category_select(selected_prop):
 
-    category_select_cb = CustomJS(code=
-    """
-        var url = window.location.href.split('?')[0];
-        window.location.href = url + "?prop=" + cb_obj.value
-    """
-    )
+    category_select_cb = CustomJS(code="reloadWithParams('prop', cb_obj.value)")
 
     return Select(
         title="Choose a category...", 

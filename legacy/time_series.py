@@ -64,9 +64,7 @@ def make_time_series_plot(church_data, prop, *, width=1000, height=600):
     )
 
     return Column(
-        make_category_select(prop), 
-        make_filter_widget(),
         plot, 
         prop_slider, 
-        year_slider
+        year_slider,
     )
