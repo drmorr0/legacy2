@@ -3,6 +3,8 @@ from bokeh.models import CustomJS
 from bokeh.models import Select
 from bokeh.layouts import Row
 
+import logging
+
 FILTER_OPTIONS = [
     'None',
     'City',
@@ -10,17 +12,17 @@ FILTER_OPTIONS = [
     'District',
 ]
 
-_DISTRICT_NAMES = {
-     "5": 'Bay View (defunct)',
-    "10": 'Delta (defunct)',
-    "15": 'Fresno (defunct)',
-    "17": 'Golden Gate (defunct)',
-    "35": 'San Jose (defunct)',
-    "40": 'Shasta (defunct)',
-    "45": 'Bridges',
-    "50": 'Central Valley',
-    "55": 'El Camino Real',
-    "60": 'Great Northern',
+DISTRICT_NAMES = {
+    'Bay View (defunct)': 5,
+    'Delta (defunct)': 10,
+    'Fresno (defunct)': 15,
+    'Golden Gate (defunct)': 17,
+    'San Jose (defunct)': 35,
+    'Shasta (defunct)': 40,
+    'Bridges': 45,
+    'Central Valley': 50,
+    'El Camino Real': 55,
+    'Great Northern': 60,
 }
 
 def _get_city_strings(church_info):
@@ -34,10 +36,11 @@ def validate_filters(church_info, filter_value=None, filter_choice_value=None):
         return False
 
     if filter_choice_value:
-        if filter_value == 'District' and filter_choice_value not in _DISTRICT_NAMES:
+        if filter_value == 'District' and filter_choice_value not in DISTRICT_NAMES:
             return False
 
-        if filter_value == 'Church' and filter_choice_value not in church_info['name']:
+        if filter_value == 'Church' and filter_choice_value not in list(church_info['name']):
+            logging.info(church_info['name'])
             return False
 
         if filter_value == 'City' and filter_choice_value not in _get_city_strings(church_info):
@@ -66,9 +69,9 @@ def make_filter_widget(church_info, filter_value, filter_choice_value):
         if filter_value == 'Church':
             filter_choice_options = list(church_info['name'])
         if filter_value == 'District':
-            filter_choice_options = list(_DISTRICT_NAMES.items())
+            filter_choice_options = list(DISTRICT_NAMES.keys())
         filter_choice_options.sort()
-        selected = filter_choice_options[0][0]
+        selected = filter_choice_value or filter_choice_options[0]
         filter_choice_cb = CustomJS(code="reloadWithParams('filter_choice', cb_obj.value)")
         filter_choice_selector = Select(
             options=filter_choice_options,
