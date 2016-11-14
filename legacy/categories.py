@@ -1,6 +1,7 @@
 
 from bokeh.models import CustomJS
 from bokeh.models import Select
+from bokeh.models import RadioButtonGroup
 
 SHORT_CATEGORY_DICT = {
     "MEMBTOT": "Total Membership",
@@ -8,13 +9,24 @@ SHORT_CATEGORY_DICT = {
 }
 
 
-def make_category_select(selected_prop):
+PLOT_TYPES = ["Time Series", "Histogram", "Comparison"]
 
-    category_select_cb = CustomJS(code="reloadWithParams('prop', cb_obj.value)")
+
+def make_category_select(selected_prop):
 
     return Select(
         title="Choose a category...", 
         options=list(SHORT_CATEGORY_DICT.items()), 
-        callback=category_select_cb,
+        callback=CustomJS(code="reloadWithParams('prop', cb_obj.value)"),
         value=selected_prop,
     )
+
+
+def make_plot_type_buttons(plot_type):
+
+    return RadioButtonGroup(
+        labels=PLOT_TYPES,
+        active=PLOT_TYPES.index(plot_type),
+        callback=CustomJS(code="reloadWithParams('plot_type', cb_obj.labels[cb_obj.active])"),
+    )
+
