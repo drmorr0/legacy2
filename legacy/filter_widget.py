@@ -1,7 +1,7 @@
 
 from bokeh.models import CustomJS
 from bokeh.models import Select
-from bokeh.layouts import Row
+from bokeh.layouts import Column
 
 import logging
 
@@ -80,6 +80,6 @@ def make_filter_widget(church_info, filter_value, filter_choice_value):
         )
 
     if filter_choice_selector:
-        return Row(filter_by_selector, filter_choice_selector), selected
+        return Column(filter_by_selector, filter_choice_selector), selected
     else:
         return filter_by_selector, selected

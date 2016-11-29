@@ -1,5 +1,7 @@
 
+from categories import make_category_select
 from categories import SHORT_CATEGORY_DICT
+from sql import run_query
 
 from bokeh.layouts import Column 
 from bokeh.layouts import Row
@@ -26,8 +28,13 @@ def _squash_outliers(data, cutoff=2):
     return data
 
 
-def make_histogram_plot(church_data, prop, *, width=1000, height=600):
+def make_histogram_plot(conn, props, filter_value, selected, *, width=1000, height=600):
 
+    if len(props) > 1:
+        logging.warning("Histogram provided multiple properties, ignoring all but the first")
+        props = props[:1]
+
+    church_data = run_query(conn, props, filter_value, selected)
     yearly_data = {year: _squash_outliers(copy(church_data.loc[church_data['year'] == year][prop])) 
             for year in range(FIRST_YEAR, CURRENT_YEAR + 1)}
     hist_data = {year: np.histogram(data, bins='fd') for year, data in yearly_data.items()}
@@ -96,6 +103,7 @@ def make_histogram_plot(church_data, prop, *, width=1000, height=600):
     )
 
     return Column(
+        make_category_select(prop),
         plot, 
         year_slider,
     )

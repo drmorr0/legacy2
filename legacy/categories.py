@@ -4,6 +4,7 @@ from bokeh.models import Select
 from bokeh.models import RadioButtonGroup
 
 SHORT_CATEGORY_DICT = {
+    "year": "Year",
     "MEMBTOT": "Total Membership",
     "AVATTWOR": "Average Worship Attendance",
 }
