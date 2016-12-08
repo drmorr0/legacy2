@@ -1,22 +1,18 @@
 
 from categories import make_category_select
 from categories import SHORT_CATEGORY_DICT
-from filter_widget import make_filter_widget
+from plot import get_extents
+from plot import make_range_slider
 
 from bokeh.layouts import Column 
-from bokeh.layouts import Row
 from bokeh.models import CustomJS
 from bokeh.models import Range1d
-from bokeh.models import Slider
 from bokeh.plotting import Figure
 
 def make_time_series_plot(church_data, prop, *, width=1000, height=600):
     churches = church_data.groupby('church_id')
 
-    min_year = church_data['year'].min()
-    max_year = church_data['year'].max()
-    min_prop = 0
-    max_prop = church_data[prop].max()
+    plot_bounds = get_extents('year', prop, church_data)
     prop_string = SHORT_CATEGORY_DICT[prop]
 
     plot = Figure(
@@ -25,8 +21,8 @@ def make_time_series_plot(church_data, prop, *, width=1000, height=600):
         title=prop_string + " over time", 
         x_axis_label='Year', 
         y_axis_label=prop_string,
-        x_range=Range1d(min_year, max_year),
-        y_range=Range1d(min_prop, max_prop),
+        x_range=Range1d(**plot_bounds['x_range']),
+        y_range=Range1d(**plot_bounds['y_range']),
         tools="save",
         logo=None,
     )
@@ -43,24 +39,16 @@ def make_time_series_plot(church_data, prop, *, width=1000, height=600):
         line_width=1,
     )
 
-    prop_range_callback = CustomJS(args={'plot': plot}, code="plot.y_range.end = cb_obj.value;")
-    prop_slider = Slider(
-        start=min_prop+1, 
-        end=max_prop, 
-        value=max_prop, 
-        step=(max_prop-min_prop)/100, 
-        title=prop_string,
-        callback=prop_range_callback,
+    prop_slider = make_range_slider(
+        plot_bounds['y_range'], 
+        title=prop_string, 
+        callback=CustomJS(args={'plot': plot}, code="plot.y_range.end = cb_obj.value;"),
+        step=1/100,
     )
-
-    year_range_callback = CustomJS(args={'plot': plot}, code="plot.x_range.end = cb_obj.value;")
-    year_slider = Slider(
-        start=min_year+1, 
-        end=max_year, 
-        value=max_year, 
-        step=1,
-        title='Years',
-        callback=year_range_callback,
+    year_slider = make_range_slider(
+        plot_bounds['x_range'], 
+        title='Years', 
+        callback=CustomJS(args={'plot': plot}, code="plot.x_range.end = cb_obj.value;"),
     )
 
     return Column(

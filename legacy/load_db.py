@@ -1,8 +1,10 @@
 
+import sqlite3 as sql
 import pandas as pd
 import logging
 
-def run_query(conn, props, filter_value, selected):
+def run_query(props, filter_value, selected):
+    conn = sql.connect('static/legacy.db')
     query = "select church_id, year"
     for prop in props:
         if prop.lower() == 'year':

@@ -6,10 +6,11 @@ from filter_widget import validate_filters
 from filter_widget import DISTRICT_NAMES
 from histogram import make_histogram_plot
 from comparison import make_comparison_plot
+from time_series import make_time_series_plot
 
 import logging
-import pandas as pd
 import sqlite3 as sql
+import pandas as pd
 import sys
 
 from bokeh.models import Div
@@ -47,6 +48,28 @@ def parse_args():
     if 'filter_by' == 'None': filter_by = None
 
 
+def load_church_data(conn, props, filter_value, selected):
+    query = "select church_id, year"
+    for prop in props:
+        if prop.lower() == 'year':
+            continue
+        query += ", {prop}".format(prop=prop)
+    query += " from church_data"
+    if filter_value:
+        query += ", churches where church_data.church_id=churches.id "
+        if filter_value == 'City':
+            logging.info(selected)
+            city, state = selected.split(",", 2)
+            query += ' and churches.city="%s"' % city
+        if filter_value == 'Church':
+            query += ' and churches.name="%s"' % selected
+        elif filter_value == 'District':
+            query += ' and churches.district="%d"' % DISTRICT_NAMES[selected]
+
+    logging.info(query)
+    return pd.read_sql(query, conn).sort_values('year')
+
+
 def handle_request():
     global props, filter_value, filter_choice_value, plot_type
 
@@ -66,11 +89,14 @@ def handle_request():
         error_request("Invalid plot type %s" % plot_type)
 
     if plot_type == "Time Series":
-        plot = make_comparison_plot(conn, ['year', props[0]], filter_value, selected)
+        church_data = load_church_data(conn, props[:1], filter_value, selected)
+        plot = make_time_series_plot(church_data, props[0])
     elif plot_type == "Histogram":
-        plot = make_histogram_plot(conn, props, filter_value, selected)
+        church_data = load_church_data(conn, props[:1], filter_value, selected)
+        plot = make_histogram_plot(church_data, props[0])
     elif plot_type == "Comparison":
-        plot = make_comparison_plot(conn, props, filter_value, selected)
+        church_data = load_church_data(conn, props, filter_value, selected)
+        plot = make_comparison_plot(church_data, props)
 
     curdoc().add_root(Column(
         make_plot_type_buttons(plot_type), 
