@@ -1,18 +1,15 @@
 import logging
 
-from categories import make_category_select
+from controls import make_range_slider
+from controls import make_category_select
 from categories import SHORT_CATEGORY_DICT
-from filter_widget import make_filter_widget
 from plot import get_extents
-from plot import make_range_slider
+from plot import make_plot_object
 
 from bokeh.layouts import Column 
-from bokeh.layouts import Row
 from bokeh.models import CustomJS
-from bokeh.models import Range1d
-from bokeh.plotting import Figure
 
-def make_comparison_plot(church_data, props, *, width=1000, height=600):
+def make_comparison_plot(church_data, props):
     if len(props) > 2:
         logging.warning("Comparison query provided more than 2 properties, ignoring the rest")
         props = props[:2]
@@ -23,16 +20,11 @@ def make_comparison_plot(church_data, props, *, width=1000, height=600):
     prop0_string = SHORT_CATEGORY_DICT[props[0]]
     prop1_string = SHORT_CATEGORY_DICT[props[1]]
 
-    plot = Figure(
-        width=width,
-        height=height,
-        title=prop0_string + " vs. " + prop1_string,
+    plot = make_plot_object(
+        title=prop0_string + ' vs. ' + prop1_string,
         x_axis_label=prop0_string,
         y_axis_label=prop1_string,
-        x_range=Range1d(**plot_bounds['x_range']),
-        y_range=Range1d(**plot_bounds['y_range']),
-        tools="save",
-        logo=None,
+        plot_bounds=plot_bounds,
     )
 
     xvals = [x[1].iloc[-1] for x in churches[props[0]]]

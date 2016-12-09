@@ -1,11 +1,11 @@
 from categories import SHORT_CATEGORY_DICT
-from categories import make_plot_type_buttons
-from categories import PLOT_TYPES
+from comparison import make_comparison_plot
+from controls import make_plot_type_buttons
 from filter_widget import make_filter_widget
 from filter_widget import validate_filters
 from filter_widget import DISTRICT_NAMES
 from histogram import make_histogram_plot
-from comparison import make_comparison_plot
+from plot import PLOT_TYPES
 from time_series import make_time_series_plot
 
 import logging
@@ -49,14 +49,13 @@ def parse_args():
 
 
 def load_church_data(conn, props, filter_value, selected):
-    query = "select church_id, year"
+    query = "select church_id, year, name"
     for prop in props:
         if prop.lower() == 'year':
             continue
         query += ", {prop}".format(prop=prop)
-    query += " from church_data"
+    query += " from church_data, churches where church_data.church_id=churches.id "
     if filter_value:
-        query += ", churches where church_data.church_id=churches.id "
         if filter_value == 'City':
             logging.info(selected)
             city, state = selected.split(",", 2)

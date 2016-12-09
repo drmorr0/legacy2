@@ -1,21 +1,17 @@
+import logging
 
-from categories import make_category_select
+from controls import make_range_slider
+from controls import make_category_select
 from categories import SHORT_CATEGORY_DICT
 from plot import get_extents
-from plot import make_range_slider
+from plot import make_plot_object
 
 from bokeh.layouts import Column 
-from bokeh.layouts import Row
 from bokeh.models import ColumnDataSource
 from bokeh.models import CustomJS
-from bokeh.models import Range1d
-from bokeh.models import Slider
-from bokeh.plotting import Figure
 
 from copy import copy
-import logging
 import numpy as np
-import json
 
 
 def _squash_outliers(data, cutoff=2):
@@ -36,7 +32,7 @@ def _sanitize(data):
     return _squash_outliers(_remove_nans(data))
 
 
-def make_histogram_plot(church_data, prop, *, width=1000, height=600):
+def make_histogram_plot(church_data, prop):
 
     plot_bounds = get_extents('year', prop, church_data)
     first_year = plot_bounds['x_range']['start']
@@ -64,16 +60,11 @@ def make_histogram_plot(church_data, prop, *, width=1000, height=600):
         top=yvals,
     ))
 
-    plot = Figure(
-        width=width,
-        height=height,
+    plot = make_plot_object(
         title=prop_string + " in " + str(current_year), 
         x_axis_label=prop_string, 
         y_axis_label='Church Count',
-        x_range=Range1d(0, max(xvals)),
-        y_range=Range1d(0, max(yvals)),
-        tools="save",
-        logo=None,
+        plot_bounds={'x_range': (0, max(xvals)), 'y_range': (0, max(yvals))},
     )
 
     bars = plot.vbar(

@@ -1,38 +1,49 @@
+import logging
 
-from categories import make_category_select
+from controls import make_category_select
+from controls import make_range_slider
 from categories import SHORT_CATEGORY_DICT
 from plot import get_extents
-from plot import make_range_slider
+from plot import make_plot_object
 
 from bokeh.layouts import Column 
+from bokeh.models import ColumnDataSource
 from bokeh.models import CustomJS
-from bokeh.models import Range1d
-from bokeh.plotting import Figure
+from bokeh.models import HoverTool
 
-def make_time_series_plot(church_data, prop, *, width=1000, height=600):
+
+def make_time_series_hover():
+    return HoverTool(
+        tooltips="""
+        <div>@church_name</div>
+        """
+    )
+
+
+def make_time_series_plot(church_data, prop):
     churches = church_data.groupby('church_id')
 
     plot_bounds = get_extents('year', prop, church_data)
     prop_string = SHORT_CATEGORY_DICT[prop]
 
-    plot = Figure(
-        width=width,
-        height=height,
+    plot = make_plot_object(
         title=prop_string + " over time", 
         x_axis_label='Year', 
         y_axis_label=prop_string,
-        x_range=Range1d(**plot_bounds['x_range']),
-        y_range=Range1d(**plot_bounds['y_range']),
-        tools="save",
-        logo=None,
+        plot_bounds=plot_bounds,
+        tools=[make_time_series_hover()],
     )
 
-    xvals = [x[1] for x in churches['year']]
-    yvals = [y[1] for y in churches[prop]]
+    time_series_data = ColumnDataSource(data=dict(
+        x=[x[1] for x in churches['year']],
+        y=[y[1] for y in churches[prop]],
+        church_name=[church[1]['name'].iloc[-1] for church in churches],
+    ))
 
     lines = plot.multi_line(
-        xvals,
-        yvals,
+        xs='x',
+        ys='y',
+        source=time_series_data, 
         alpha=0.2,
         hover_alpha=1.0,
         hover_color='orange',

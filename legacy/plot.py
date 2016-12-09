@@ -1,26 +1,33 @@
 
+from bokeh.models import Range1d
 from bokeh.models import Slider
+from bokeh.models import SaveTool
+from bokeh.plotting import Figure
+
+
+PLOT_TYPES = ["Time Series", "Histogram", "Comparison"]
 
 
 def get_extents(xprop, yprop, church_data):
     return {
-        'x_range': {'start': church_data[xprop].min(), 'end': church_data[xprop].max()},
-        'y_range': {'start': church_data[yprop].min(), 'end': church_data[yprop].max()},
+        'x_range': (church_data[xprop].min(), church_data[xprop].max()),
+        'y_range': (church_data[yprop].min(), church_data[yprop].max()),
     }
 
 
-def make_range_slider(rng, title, callback, step=1):
-    if step < 0:
-        raise ValueError("Invalid setting for step: {step}".format(step=step))
-    elif step < 1:
-        step *= (rng['end'] - rng['start'])
-        
-    return Slider(
-        start=rng['start']+1, 
-        end=rng['end'], 
-        value=rng['end'], 
-        step=step,
+def make_plot_object(title, x_axis_label, y_axis_label, plot_bounds, tools=[], width=1000, height=600):
+    tools.extend([SaveTool()])
+    plot = Figure(
+        width=width,
+        height=height,
         title=title,
-        callback=callback,
+        x_axis_label=x_axis_label,
+        y_axis_label=y_axis_label,
+        x_range=Range1d(plot_bounds['x_range'][0], plot_bounds['x_range'][1]),
+        y_range=Range1d(plot_bounds['y_range'][0], plot_bounds['y_range'][1]),
+        tools=tools,
+        logo=None,
     )
+
+    return plot
 
