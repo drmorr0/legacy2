@@ -10,14 +10,26 @@ from bokeh.layouts import Column
 from bokeh.models import ColumnDataSource
 from bokeh.models import CustomJS
 from bokeh.models import HoverTool
+from bokeh.models import TapTool
 
 
-def make_time_series_hover():
-    return HoverTool(
-        tooltips="""
-        <div>@church_name</div>
-        """
-    )
+def make_time_series_tools(data_source, prop_string):
+    return [
+        HoverTool(
+            tooltips="""
+                <div>@church_name</div>
+                <div>Growth: @delta</div>
+            """,
+        ),
+        TapTool(
+            callback=CustomJS(
+                args={'data_source':data_source},
+                code="""populateDetailsColumns("{prop}", data_source.selected['1d']['indices'], cb_obj.data)""".format(
+                    prop=prop_string,
+                ),
+            ),
+        ),
+    ]
 
 
 def make_time_series_plot(church_data, prop):
@@ -26,19 +38,20 @@ def make_time_series_plot(church_data, prop):
     plot_bounds = get_extents('year', prop, church_data)
     prop_string = SHORT_CATEGORY_DICT[prop]
 
+    time_series_data = ColumnDataSource(data=dict(
+        x=[x[1] for x in churches['year']],
+        y=[y[1] for y in churches[prop]],
+        church_name=[church[1]['name'].iloc[-1] for church in churches],
+        delta=["{0:.1f}%".format(y[1].iloc[-1] / y[1].iloc[0] * 100 - 100) for y in churches[prop]]
+    ))
+
     plot = make_plot_object(
         title=prop_string + " over time", 
         x_axis_label='Year', 
         y_axis_label=prop_string,
         plot_bounds=plot_bounds,
-        tools=[make_time_series_hover()],
+        tools=make_time_series_tools(time_series_data, prop_string),
     )
-
-    time_series_data = ColumnDataSource(data=dict(
-        x=[x[1] for x in churches['year']],
-        y=[y[1] for y in churches[prop]],
-        church_name=[church[1]['name'].iloc[-1] for church in churches],
-    ))
 
     lines = plot.multi_line(
         xs='x',
@@ -47,6 +60,7 @@ def make_time_series_plot(church_data, prop):
         alpha=0.2,
         hover_alpha=1.0,
         hover_color='orange',
+        selection_color='firebrick',
         line_width=1,
     )
 

@@ -1,0 +1,11 @@
+
+#modelid_filter_choice_selector {visibility: hidden}
+
+h2 { font-size: 18px; margin-bottom: 5px; }
+h3 { font-size: 16px; font-weight: normal; font-style: italic; margin-top: 0; }
+
+.details .column-left {float: left; width: 33%; }
+.details .column-right {float: right; width: 33%; }
+.details .column-center {display: inline-block; width: 33%; }
+.details .church { font-size: 14px; margin-bottom: 20px; }
+.details .data-point .x, .details .data-point .y { display: inline-block; width: 60px; text-align: right; }

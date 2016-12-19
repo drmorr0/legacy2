@@ -10,7 +10,7 @@ from watchdog.events import FileSystemEventHandler
 class BokehRestartEventHandler(FileSystemEventHandler):
 
     def __init__(self):
-        self.process = subprocess.Popen('bokeh serve legacy'.split(), stdout=subprocess.PIPE)
+        self.process = subprocess.Popen('venv/bin/bokeh serve legacy'.split(), stdout=subprocess.PIPE)
         self.last_restart = time.time()
 
     def _del__(self):
@@ -26,7 +26,7 @@ class BokehRestartEventHandler(FileSystemEventHandler):
 
         print("Restarting bokeh server")
         self.process.kill()
-        self.process = subprocess.Popen('bokeh serve legacy'.split(), stdout=subprocess.PIPE)
+        self.process = subprocess.Popen('venv/bin/bokeh serve legacy'.split(), stdout=subprocess.PIPE)
         self.last_restart = time.time()
 
 

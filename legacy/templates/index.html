@@ -7,31 +7,24 @@
         {{ bokeh_js}}
         <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/URI.js/1.18.2/URI.min.js"></script>
-        <style>
-            {% include 'style.css' %}
-        </style>
+        <script src="legacy/static/legacy.js" type="text/javascript"></script>
+        <link href="legacy/static/style.css" rel="stylesheet" type="text/css">
     </head>
 
     <body>
         <div class="plot">
+            <h2>Data Viewer</h2>
             {{ plot_div }}
         </div>
+
+        <div class="details">
+            <h2>Details of Selected Objects</h2>
+            <h3></h3>
+            <div class="column-left"></div>
+            <div class="column-center"></div>
+            <div class="column-right"></div>
+        </div>
     {{ plot_script }}
-    <script type="text/javascript">
-        function reloadWithParams(new_params, values) {
-			var uri = new URI(window.location.href);
-			params = uri.search(true);
-			if (new_params.constructor === Array) {
-				$.each(new_params, function(i, p) {
-					if (values[i] === null)
-						delete params[p];
-					else params[p] = values[i];
-				});
-			}
-			else params[new_params] = values;
-			window.location.href = uri.search(params);
-        }
-    </script>
     </body>
 
 </html>
