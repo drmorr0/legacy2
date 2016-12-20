@@ -1,20 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title>Legacy Church Project</title>
-        {{ bokeh_css }}
-        {{ bokeh_js}}
-        <script src="http://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/URI.js/1.18.2/URI.min.js"></script>
-        <script src="legacy/static/legacy.js" type="text/javascript"></script>
-        <link href="legacy/static/style.css" rel="stylesheet" type="text/css">
-    </head>
+{% extends "root.html" %}
 
-    <body>
+{% block head %}
+{{ super() }}
+{{ js_resources|safe }}
+{{ css_resources|safe }}
+{% endblock %}
+
+{% block content %}
         <div class="plot">
             <h2>Data Viewer</h2>
-            {{ plot_div }}
+            {{ plot_div|safe }}
         </div>
 
         <div class="details">
@@ -24,7 +19,5 @@
             <div class="column-center"></div>
             <div class="column-right"></div>
         </div>
-    {{ plot_script }}
-    </body>
-
-</html>
+    {{ plot_script|safe }}
+{% endblock %}

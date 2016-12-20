@@ -1,10 +1,10 @@
 import logging
 
-from controls import make_range_slider
-from controls import make_category_select
-from categories import SHORT_CATEGORY_DICT
-from plot import get_extents
-from plot import make_plot_object
+from legacy.controls import make_range_slider
+from legacy.controls import make_category_select
+from legacy.categories import SHORT_CATEGORY_DICT
+from legacy.plot import get_extents
+from legacy.plot import make_plot_object
 
 from bokeh.layouts import Column 
 from bokeh.models import CustomJS

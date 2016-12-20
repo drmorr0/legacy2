@@ -15,8 +15,9 @@ def get_extents(xprop, yprop, church_data):
     }
 
 
-def make_plot_object(title, x_axis_label, y_axis_label, plot_bounds, tools=[], width=1000, height=600):
-    tools.extend([SaveTool()])
+def make_plot_object(title, x_axis_label, y_axis_label, plot_bounds, tools=None, width=1000, height=600):
+    if not tools: tools = []
+    tools.extend(['save'])
     plot = Figure(
         width=width,
         height=height,

@@ -1,5 +1,5 @@
-from categories import SHORT_CATEGORY_DICT
-from plot import PLOT_TYPES
+from legacy.categories import SHORT_CATEGORY_DICT
+from legacy.plot import PLOT_TYPES
 
 from bokeh.models import CustomJS
 from bokeh.models import RadioButtonGroup

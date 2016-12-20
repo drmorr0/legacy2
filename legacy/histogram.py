@@ -1,10 +1,10 @@
 import logging
 
-from controls import make_range_slider
-from controls import make_category_select
-from categories import SHORT_CATEGORY_DICT
-from plot import get_extents
-from plot import make_plot_object
+from legacy.controls import make_range_slider
+from legacy.controls import make_category_select
+from legacy.categories import SHORT_CATEGORY_DICT
+from legacy.plot import get_extents
+from legacy.plot import make_plot_object
 
 from bokeh.layouts import Column 
 from bokeh.models import ColumnDataSource
@@ -35,8 +35,8 @@ def _sanitize(data):
 def make_histogram_plot(church_data, prop):
 
     plot_bounds = get_extents('year', prop, church_data)
-    first_year = plot_bounds['x_range']['start']
-    current_year = plot_bounds['x_range']['end']
+    first_year = plot_bounds['x_range'][0]
+    current_year = plot_bounds['x_range'][1]
 
     yearly_data = {year: _sanitize(copy(church_data.loc[church_data['year'] == year][prop])) 
             for year in range(first_year, current_year + 1)}

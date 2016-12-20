@@ -1,0 +1,26 @@
+{% extends "root.html" %}
+
+{% block title %}
+{{ church_name }}
+{% endblock %}
+
+{% block content %}
+<h1>{{ church_data['name'].iloc[-1] }} ({{ church_data['id'].iloc[-1] }})</h1>
+<table>
+    <th></th>
+    {% for year in church_data.index %}
+        <th>{{ year }}</th>
+    {% endfor %}
+
+    {% for key in church_data.columns.values %}
+    {% if key is upper %}
+        <tr>
+            <td>{{ key }}</td>
+            {% for year in church_data.index %}
+                <td>{{ church_data[key][year] }}</td>
+            {% endfor %}
+        </tr>
+    {% endif %}
+    {% endfor %}
+</table>
+{% endblock %}

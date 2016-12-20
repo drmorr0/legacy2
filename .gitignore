@@ -33,3 +33,4 @@ cmake_install.cmake
 
 # Put your stuff here
 __pycache__
+venv
