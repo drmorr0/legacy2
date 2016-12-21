@@ -18,8 +18,6 @@ from bokeh.embed import components
 from bokeh.models import Div
 from bokeh.models import Row
 from bokeh.models import Column 
-from bokeh.resources import INLINE
-from bokeh.util.string import encode_utf8
 
 
 def parse_args():
@@ -88,17 +86,13 @@ def plot_church_data():
         Row(plot, filter_widget),
     )
 
-    js_resources = INLINE.render_js()
-    css_resources = INLINE.render_css()
     script, div = components(plot_app)
 
     html = flask.render_template(
         'index.html',
         plot_script=script,
         plot_div=div,
-        js_resources=js_resources,
-        css_resources=css_resources,
         **args,
     )
 
-    return encode_utf8(html)
+    return html

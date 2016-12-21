@@ -2,8 +2,10 @@
 
 {% block head %}
 {{ super() }}
-{{ js_resources|safe }}
-{{ css_resources|safe }}
+<script src="static/vendor/bokeh/bokeh.min.js" type="text/javascript"></script>
+<script src="static/vendor/bokeh/bokeh-widgets.min.js" type="text/javascript"></script>
+<link href="static/vendor/bokeh/bokeh.min.css" rel="stylesheet" type="text/css">
+<link href="static/vendor/bokeh/bokeh-widgets.min.css" rel="stylesheet" type="text/css">
 {% endblock %}
 
 {% block content %}
