@@ -27,18 +27,34 @@ function populateDetailsColumns(property, indices, churches) {
 
         var details_html = 
             "<div class='church'>" + 
-            "<div class='name'>" + churches['church_name'][index] + "</div>";
+            "<a href='/church/" + churches['church_id'][index] + "'>" + churches['church_name'][index] + "</a>" +
+            "<table>";
+
         for (i = 0; i < churches['x'][index].length; i++) {
-            details_html += "<div class='data-point'>";
-            details_html += "<span class='x'>" + churches['x'][index][i] + "</span>";
-            details_html += "<span class='y'>" + churches['y'][index][i] + "</span>";
-            details_html += "</div>";
+            details_html += "<tr>";
+            details_html += "<td>" + churches['x'][index][i] + "</td>";
+            details_html += "<td>" + churches['y'][index][i] + "</td>";
+            details_html += "</tr>";
         }
-        details_html += "</div>";
+        details_html += "</table>";
 
         $('.details ' + columnClass).append(details_html);
 
         currentColumn += 1;
         if (currentColumn > 2) currentColumn = 0;
     });
+}
+
+function showHistoryLine(historySource, historyPoints, church_indices) {
+    var visibleHistory = {'x0': [], 'y0': [], 'x1': [], 'y1': []};
+    for (i = 0; i < church_indices.length; i++) {
+        var j = church_indices[i];
+        for (k = 0; k < historyPoints['x'][j].length - 1; k++) {
+            visibleHistory['x0'].push(historyPoints['x'][j][k]);
+            visibleHistory['x1'].push(historyPoints['x'][j][k+1]);
+            visibleHistory['y0'].push(historyPoints['y'][j][k]);
+            visibleHistory['y1'].push(historyPoints['y'][j][k+1]);
+        }
+    }
+    historySource.data = visibleHistory;
 }

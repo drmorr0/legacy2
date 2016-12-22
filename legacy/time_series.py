@@ -13,7 +13,7 @@ from bokeh.models import HoverTool
 from bokeh.models import TapTool
 
 
-def make_time_series_tools(data_source, prop_string):
+def _make_time_series_tools(data_source, prop_string):
     return [
         HoverTool(
             tooltips="""
@@ -42,7 +42,8 @@ def make_time_series_plot(church_data, prop):
         x=[x[1] for x in churches['year']],
         y=[y[1] for y in churches[prop]],
         church_name=[church[1]['name'].iloc[-1] for church in churches],
-        delta=["{0:.1f}%".format(y[1].iloc[-1] / y[1].iloc[0] * 100 - 100) for y in churches[prop]]
+        delta=["{0:.1f}%".format(y[1].iloc[-1] / y[1].iloc[0] * 100 - 100) for y in churches[prop]],
+        church_id=[church[1]['church_id'].iloc[-1] for church in churches],
     ))
 
     plot = make_plot_object(
@@ -50,7 +51,7 @@ def make_time_series_plot(church_data, prop):
         x_axis_label='Year', 
         y_axis_label=prop_string,
         plot_bounds=plot_bounds,
-        tools=make_time_series_tools(time_series_data, prop_string),
+        tools=_make_time_series_tools(time_series_data, prop_string),
     )
 
     lines = plot.multi_line(

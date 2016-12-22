@@ -7,7 +7,25 @@ from legacy.plot import get_extents
 from legacy.plot import make_plot_object
 
 from bokeh.layouts import Column 
+from bokeh.models import ColumnDataSource
 from bokeh.models import CustomJS
+from bokeh.models import HoverTool
+from bokeh.models import TapTool
+
+
+def _make_comparison_tools(history_source, history_points, points):
+    return HoverTool(
+            callback=CustomJS(
+                args={'history_source': history_source},
+                code="""
+                    var history_points = %s;
+                    showHistoryLine(history_source, history_points, cb_data.index['1d'].indices);
+                """ % history_points,
+            ),
+            renderers=[points],
+            tooltips=None,
+        )
+
 
 def make_comparison_plot(church_data, props):
     if len(props) > 2:
@@ -20,6 +38,17 @@ def make_comparison_plot(church_data, props):
     prop0_string = SHORT_CATEGORY_DICT[props[0]]
     prop1_string = SHORT_CATEGORY_DICT[props[1]]
 
+    comparison_data = ColumnDataSource(data=dict(
+        x=[x[1].iloc[-1] for x in churches[props[0]]],
+        y=[y[1].iloc[-1] for y in churches[props[1]]],
+    ))
+
+    comparison_history = ColumnDataSource(data={'x0': [], 'y0': [], 'x1': [], 'y1': []})
+    comparison_history_points = {
+        'x':[list(x[1]) for x in churches[props[0]]],
+        'y':[list(y[1]) for y in churches[props[1]]],
+    }
+
     plot = make_plot_object(
         title=prop0_string + ' vs. ' + prop1_string,
         x_axis_label=prop0_string,
@@ -31,14 +60,27 @@ def make_comparison_plot(church_data, props):
     yvals = [y[1].iloc[-1] for y in churches[props[1]]]
 
     points = plot.circle(
-        x=xvals,
-        y=yvals,
+        x='x',
+        y='y',
+        source=comparison_data,
         size=10,
         alpha=0.2,
         hover_alpha=1.0,
         hover_color='orange',
         line_width=1,
     )
+
+    lines = plot.segment(
+        x0='x0',
+        y0='y0',
+        x1='x1',
+        y1='y1',
+        source=comparison_history, 
+        line_color='orange',
+        line_width=1,
+    )
+
+    plot.add_tools(_make_comparison_tools(comparison_history, comparison_history_points, points))
 
     prop0_slider = make_range_slider(
         plot_bounds['x_range'],

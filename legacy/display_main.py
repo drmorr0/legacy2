@@ -18,6 +18,8 @@ from bokeh.embed import components
 from bokeh.models import Div
 from bokeh.models import Row
 from bokeh.models import Column 
+from bokeh.plotting import curdoc
+from bokeh.themes import Theme
 
 
 def parse_args():
@@ -50,7 +52,7 @@ def load_churches_data(conn, props, filter_value, selected):
             query += ' and churches.district="%d"' % DISTRICT_NAMES[selected]
 
     logging.info(query)
-    return pd.read_sql(query, conn).sort_values('year')
+    return pd.read_sql(query, conn).sort_values('year').fillna(0)
 
 
 @app.route("/")

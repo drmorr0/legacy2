@@ -9,9 +9,29 @@ from legacy.plot import make_plot_object
 from bokeh.layouts import Column 
 from bokeh.models import ColumnDataSource
 from bokeh.models import CustomJS
+from bokeh.models import HoverTool
+from bokeh.models import TapTool
 
 from copy import copy
 import numpy as np
+
+
+def _make_histogram_tools(data_source, prop_string):
+    return [
+        HoverTool(
+            tooltips="""
+                <div>@top churches between @left and @right</div>
+            """,
+        ),
+        TapTool(
+            callback=CustomJS(
+                args={'data_source':data_source},
+                code="""populateDetailsColumns("{prop}", data_source.selected['1d']['indices'], cb_obj.data)""".format(
+                    prop=prop_string,
+                ),
+            ),
+        ),
+    ]
 
 
 def _squash_outliers(data, cutoff=2):
@@ -58,6 +78,8 @@ def make_histogram_plot(church_data, prop):
         x=xvals,
         width=width_array,
         top=yvals,
+        left=[round(x) for x in xvals],
+        right=[round(x) + round(width_array[0]) for x in xvals[:-1]] + [church_data[prop].max()],
     ))
 
     plot = make_plot_object(
@@ -65,6 +87,7 @@ def make_histogram_plot(church_data, prop):
         x_axis_label=prop_string, 
         y_axis_label='Church Count',
         plot_bounds={'x_range': (0, max(xvals)), 'y_range': (0, max(yvals))},
+        tools=_make_histogram_tools(bar_data, prop_string)
     )
 
     bars = plot.vbar(
