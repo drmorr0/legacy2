@@ -3,6 +3,7 @@ import logging
 from legacy.controls import make_category_select
 from legacy.controls import make_range_slider
 from legacy.categories import SHORT_CATEGORY_DICT
+from legacy.plot import apply_theme
 from legacy.plot import get_extents
 from legacy.plot import make_plot_object
 
@@ -11,26 +12,6 @@ from bokeh.models import ColumnDataSource
 from bokeh.models import CustomJS
 from bokeh.models import HoverTool
 from bokeh.models import TapTool
-
-
-def _make_time_series_tools(data_source, prop_string):
-    return [
-        HoverTool(
-            tooltips="""
-                <div>@church_name</div>
-                <div>Growth: @delta</div>
-            """,
-        ),
-        TapTool(
-            callback=CustomJS(
-                args={'data_source':data_source},
-                code="""populateDetailsColumns("{prop}", data_source.selected['1d']['indices'], cb_obj.data)""".format(
-                    prop=prop_string,
-                ),
-            ),
-        ),
-    ]
-
 
 def make_time_series_plot(church_data, prop):
     churches = church_data.groupby('church_id')
@@ -58,12 +39,8 @@ def make_time_series_plot(church_data, prop):
         xs='x',
         ys='y',
         source=time_series_data, 
-        alpha=0.2,
-        hover_alpha=1.0,
-        hover_color='orange',
-        selection_color='firebrick',
-        line_width=1,
     )
+    apply_theme(plot, lines)
 
     prop_slider = make_range_slider(
         plot_bounds['y_range'], 
@@ -82,3 +59,27 @@ def make_time_series_plot(church_data, prop):
         prop_slider, 
         year_slider,
     )
+
+
+def _make_time_series_tools(data_source, prop_string):
+    return [
+        HoverTool(
+            tooltips="""
+                <div>@church_name</div>
+                <div>Growth: @delta</div>
+            """,
+        ),
+        TapTool(
+            callback=CustomJS(
+                args={'data_source': data_source},
+                code="""
+                    var selectedChurches = getElementsAt(cb_obj.data, data_source.selected['1d']['indices'],
+                        ['church_id', 'church_name', 'x', 'y']);
+                    details = makeChurchesDetailsArray('Year', '{prop}', selectedChurches);
+                    populateDetailsColumns(details);
+                """.format(prop=prop_string),
+            ),
+        ),
+    ]
+
+

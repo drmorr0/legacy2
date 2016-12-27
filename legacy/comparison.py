@@ -13,20 +13,6 @@ from bokeh.models import HoverTool
 from bokeh.models import TapTool
 
 
-def _make_comparison_tools(history_source, history_points, points):
-    return HoverTool(
-            callback=CustomJS(
-                args={'history_source': history_source},
-                code="""
-                    var history_points = %s;
-                    showHistoryLine(history_source, history_points, cb_data.index['1d'].indices);
-                """ % history_points,
-            ),
-            renderers=[points],
-            tooltips=None,
-        )
-
-
 def make_comparison_plot(church_data, props):
     if len(props) > 2:
         logging.warning("Comparison query provided more than 2 properties, ignoring the rest")
@@ -41,6 +27,8 @@ def make_comparison_plot(church_data, props):
     comparison_data = ColumnDataSource(data=dict(
         x=[x[1].iloc[-1] for x in churches[props[0]]],
         y=[y[1].iloc[-1] for y in churches[props[1]]],
+        church_name=[church[1]['name'].iloc[-1] for church in churches],
+        church_id=[church[1]['church_id'].iloc[-1] for church in churches],
     ))
 
     comparison_history = ColumnDataSource(data={'x0': [], 'y0': [], 'x1': [], 'y1': []})
@@ -80,7 +68,14 @@ def make_comparison_plot(church_data, props):
         line_width=1,
     )
 
-    plot.add_tools(_make_comparison_tools(comparison_history, comparison_history_points, points))
+    plot.add_tools(*_make_comparison_tools(
+        comparison_data,
+        comparison_history, 
+        comparison_history_points, 
+        points, 
+        prop0_string, 
+        prop1_string
+    ))
 
     prop0_slider = make_range_slider(
         plot_bounds['x_range'],
@@ -101,3 +96,33 @@ def make_comparison_plot(church_data, props):
         prop0_slider, 
         prop1_slider,
     )
+
+
+def _make_comparison_tools(point_source, history_source, history_points, points, prop0_str, prop1_str):
+    return (
+        HoverTool(
+            tooltips="<div>@church_name</div>",
+            callback=CustomJS(
+                args={'history_source': history_source},
+                code="""
+                    var history_points = %s;
+                    showHistoryLine(history_source, history_points, cb_data.index['1d'].indices);
+                """ % history_points,
+            ),
+            renderers=[points],
+        ),
+        TapTool(
+            callback=CustomJS(
+                args={'data_source': point_source},
+                code="""
+                    var selectedChurches = getElementsAt(cb_obj.data, data_source.selected['1d']['indices'],
+                        ['church_id', 'church_name', 'x', 'y']);
+                    html = makeChurchComparisonList('{prop0_string}', '{prop1_string}', selectedChurches);
+                    populateDetailsColumns(html);
+                """.format(prop0_string=prop0_str, prop1_string=prop1_str),
+            ),
+            renderers=[points],
+        ),
+    )
+
+

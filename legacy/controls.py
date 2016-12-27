@@ -14,7 +14,7 @@ def make_range_slider(rng, title, callback, step=1):
         step *= (rng[1] - rng[0])
         
     return Slider(
-        start=rng[0]+1, 
+        start=rng[0], 
         end=rng[1], 
         value=rng[1], 
         step=step,
