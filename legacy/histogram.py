@@ -3,6 +3,7 @@ import logging
 from legacy.controls import make_range_slider
 from legacy.controls import make_category_select
 from legacy.categories import SHORT_CATEGORY_DICT
+from legacy.plot import apply_theme
 from legacy.plot import get_extents
 from legacy.plot import make_plot_object
 
@@ -79,10 +80,8 @@ def make_histogram_plot(church_data, prop):
         bottom=0,
         top='top',
         source=bar_data,
-        alpha=0.2,
-        hover_alpha=1.0,
-        hover_color='orange',
     )
+    apply_theme(plot, bars)
 
     year_slider = make_range_slider(
         plot_bounds['x_range'],

@@ -95,16 +95,17 @@ function histogramSliderCallback(year, property, histBins, histItems, maxVals, p
     barData.trigger('change');
 }
 
-function showHistoryLine(historySource, historyPoints, church_indices) {
-    var visibleHistory = {'x0': [], 'y0': [], 'x1': [], 'y1': []};
-    for (i = 0; i < church_indices.length; i++) {
-        var j = church_indices[i];
-        for (k = 0; k < historyPoints['x'][j].length - 1; k++) {
-            visibleHistory['x0'].push(historyPoints['x'][j][k]);
-            visibleHistory['x1'].push(historyPoints['x'][j][k+1]);
-            visibleHistory['y0'].push(historyPoints['y'][j][k]);
-            visibleHistory['y1'].push(historyPoints['y'][j][k+1]);
+function showHistoryLine(comparisonData, hoverData, history, churchIndices) {
+
+    var newSegments = {'x0': [], 'x1': [], 'y0': [], 'y1': []}
+    churchIndices.forEach(function(j) {
+        for (k = 0; k < history['x'][j].length - 1; k++) {
+            newSegments['x0'].push(history['x'][j][k]);
+            newSegments['x1'].push(history['x'][j][k+1]);
+            newSegments['y0'].push(history['y'][j][k]);
+            newSegments['y1'].push(history['y'][j][k+1]);
         }
-    }
-    historySource.data = visibleHistory;
+    });
+
+    hoverData.data = newSegments;
 }

@@ -3,6 +3,7 @@ import logging
 from legacy.controls import make_range_slider
 from legacy.controls import make_category_select
 from legacy.categories import SHORT_CATEGORY_DICT
+from legacy.plot import apply_theme
 from legacy.plot import get_extents
 from legacy.plot import make_plot_object
 
@@ -31,8 +32,9 @@ def make_comparison_plot(church_data, props):
         church_id=[church[1]['church_id'].iloc[-1] for church in churches],
     ))
 
-    comparison_history = ColumnDataSource(data={'x0': [], 'y0': [], 'x1': [], 'y1': []})
-    comparison_history_points = {
+    hover_data = ColumnDataSource(data={'x0': [], 'y0': [], 'x1': [], 'y1': []})
+    selected_data = ColumnDataSource(data={'x0': [], 'y0': [], 'x1': [], 'y1': []})
+    history = {
         'x':[list(x[1]) for x in churches[props[0]]],
         'y':[list(y[1]) for y in churches[props[1]]],
     }
@@ -52,26 +54,20 @@ def make_comparison_plot(church_data, props):
         y='y',
         source=comparison_data,
         size=10,
-        alpha=0.2,
-        hover_alpha=1.0,
-        hover_color='orange',
-        line_width=1,
     )
 
-    lines = plot.segment(
-        x0='x0',
-        y0='y0',
-        x1='x1',
-        y1='y1',
-        source=comparison_history, 
-        line_color='orange',
-        line_width=1,
-    )
+    hover_lines = plot.segment(x0='x0', y0='y0', x1='x1', y1='y1', source=hover_data)
+    selected_lines = plot.segment(x0='x0', y0='y0', x1='x1', y1='y1', source=selected_data)
+    apply_theme(plot, points, hover_lines, selected_lines, overrides={
+        1: {'line_color': 'orange', 'line_alpha': 1.0},
+        2: {'line_color': 'firebrick', 'line_alpha': 1.0},
+    })
 
     plot.add_tools(*_make_comparison_tools(
         comparison_data,
-        comparison_history, 
-        comparison_history_points, 
+        hover_data,
+        selected_data,
+        history, 
         points, 
         prop0_string, 
         prop1_string
@@ -98,28 +94,30 @@ def make_comparison_plot(church_data, props):
     )
 
 
-def _make_comparison_tools(point_source, history_source, history_points, points, prop0_str, prop1_str):
+def _make_comparison_tools(comparison_data, hover_data, selected_data, history, points, prop0_str, prop1_str):
     return (
         HoverTool(
             tooltips="<div>@church_name</div>",
             callback=CustomJS(
-                args={'history_source': history_source},
+                args={'comparisonData': comparison_data, 'hoverData': hover_data}, 
                 code="""
-                    var history_points = %s;
-                    showHistoryLine(history_source, history_points, cb_data.index['1d'].indices);
-                """ % history_points,
+                    var history = %s;
+                    showHistoryLine(comparisonData, hoverData, history, cb_data.index['1d'].indices);
+                """ % history,
             ),
             renderers=[points],
         ),
         TapTool(
             callback=CustomJS(
-                args={'data_source': point_source},
+                args={'comparisonData': comparison_data, 'selectedData': selected_data},
                 code="""
-                    var selectedChurches = getElementsAt(cb_obj.data, data_source.selected['1d']['indices'],
+                    var history = {history};
+                    var selectedChurches = getElementsAt(cb_obj.data, comparisonData.selected['1d'].indices,
                         ['church_id', 'church_name', 'x', 'y']);
                     html = makeChurchComparisonList('{prop0_string}', '{prop1_string}', selectedChurches);
                     populateDetailsColumns(html);
-                """.format(prop0_string=prop0_str, prop1_string=prop1_str),
+                    showHistoryLine(comparisonData, selectedData, history, comparisonData.selected['1d'].indices);
+                """.format(history=history, prop0_string=prop0_str, prop1_string=prop1_str),
             ),
             renderers=[points],
         ),
