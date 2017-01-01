@@ -1,4 +1,7 @@
 
+from flask import request
+
+
 SHORT_CATEGORY_DICT = {
     "year": "Year",
     "MEMBTOT": "Total Membership",

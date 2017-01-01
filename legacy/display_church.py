@@ -15,7 +15,6 @@ def load_church_data(conn, church_id):
 def display_church(church_id):
     conn = sql.connect('data/legacy.db')
     church_data = load_church_data(conn, church_id)
-    print(church_data['MEMBTOT'][2010])
     
     return flask.render_template(
         'church.html',

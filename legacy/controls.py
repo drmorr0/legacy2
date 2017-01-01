@@ -3,6 +3,7 @@ from legacy.plot import PLOT_TYPES
 
 from bokeh.models import CustomJS
 from bokeh.models import RadioButtonGroup
+from bokeh.models import Row
 from bokeh.models import Select
 from bokeh.models import Slider
 
@@ -23,13 +24,21 @@ def make_range_slider(rng, title, callback, step=1):
     )
 
 
-def make_category_select(selected_prop):
-    return Select(
-        title="Choose a category...", 
-        options=list(SHORT_CATEGORY_DICT.items()), 
-        callback=CustomJS(code="reloadWithParams('prop', cb_obj.value)"),
-        value=selected_prop,
-    )
+def make_category_select(selected_props):
+    selected_props = selected_props if isinstance(selected_props, list) else [selected_props]
+    children = []
+    for cb_index, prop in enumerate(selected_props):
+        cb_values = ['"{prop}"'.format(prop=prop) for prop in selected_props]
+        cb_values[cb_index] = 'cb_obj.value'
+        cb_string = '[' + ','.join(cb_values) + ']'
+
+        children.append(Select(
+            title="Choose a category...", 
+            options=list(SHORT_CATEGORY_DICT.items()), 
+            callback=CustomJS(code="reloadWithParams('properties', %s)" % cb_string),
+            value=prop,
+        ))
+    return Row(children=children)
 
 
 def make_plot_type_buttons(plot_type):
@@ -38,4 +47,3 @@ def make_plot_type_buttons(plot_type):
         active=PLOT_TYPES.index(plot_type),
         callback=CustomJS(code="reloadWithParams('plot_type', cb_obj.labels[cb_obj.active])"),
     )
-

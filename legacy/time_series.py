@@ -55,6 +55,7 @@ def make_time_series_plot(church_data, prop):
     )
 
     return Column(
+        make_category_select(prop),
         plot, 
         prop_slider, 
         year_slider,

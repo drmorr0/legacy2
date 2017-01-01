@@ -21,22 +21,28 @@ from bokeh.models import Column
 from bokeh.plotting import curdoc
 from bokeh.themes import Theme
 
+class LegacyException(Exception):
+    pass
+
 
 def parse_args():
-    global props, filter_value, filter_choice_value, plot_type
-
     args = dict(flask.request.args)
     args.setdefault('properties', ['MEMBTOT', 'AVATTWOR']),
     args.setdefault('filter_by', [None]),
     args.setdefault('filter_choice', [None]),
     args.setdefault('plot_type', ['Time Series']),
 
+    # This is a little hack-y, but oh well
+    if len(args['properties']) < 2 and args['plot_type'] == ['Comparison']:
+        print("Not enough properties, displaying MEMBTOT")
+        args['properties'].append('MEMBTOT')
+
     return args
 
 
 def load_churches_data(conn, props, filter_value, selected):
     query = "select church_id, year, name"
-    for prop in props:
+    for prop in set(props):
         if prop.lower() == 'year':
             continue
         query += ", {prop}".format(prop=prop)
@@ -51,7 +57,7 @@ def load_churches_data(conn, props, filter_value, selected):
         elif filter_value == 'District':
             query += ' and churches.district="%d"' % DISTRICT_NAMES[selected]
 
-    logging.info(query)
+    print(query)
     return pd.read_sql(query, conn).sort_values('year').fillna(0)
 
 
@@ -63,15 +69,15 @@ def plot_church_data():
     church_info = pd.read_sql("select * from churches", conn)
 
     if not validate_filters(church_info, args['filter_by'][0], args['filter_choice'][0]):
-        error_request("Invalid filter parameters %s %s" % (args['filter_by'][0], args['filter_choice'][0]))
+        raise LegacyException("Invalid filter parameters %s %s" % (args['filter_by'][0], args['filter_choice'][0]))
     filter_widget, selected = make_filter_widget(church_info, args['filter_by'][0], args['filter_choice'][0])
 
     for prop in args['properties']:
         if prop not in SHORT_CATEGORY_DICT.keys():
-            error_request("Invalid property %s" % prop)
+            raise LegacyException("Invalid property %s" % prop)
 
     if args['plot_type'][0] not in PLOT_TYPES:
-        error_request("Invalid plot type %s" % args['plot_type'][0])
+        raise LegacyException("Invalid plot type %s" % args['plot_type'][0])
 
     if args['plot_type'][0] == "Time Series":
         church_data = load_churches_data(conn, args['properties'][:1], args['filter_by'][0], selected)

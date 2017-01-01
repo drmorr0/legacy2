@@ -88,6 +88,7 @@ def make_comparison_plot(church_data, props):
     )
         
     return Column(
+        make_category_select(props),
         plot, 
         prop0_slider, 
         prop1_slider,

@@ -18,7 +18,11 @@
         <tr>
             <td>{{ key }}</td>
             {% for year in church_data.index %}
-                <td>{{ church_data[key][year] }}</td>
+                <td>
+                {% if church_data[key][year]|string() != "nan" %}
+                    {{ church_data[key][year]|int() }} 
+                {% endif %}
+                </td>
             {% endfor %}
         </tr>
     {% endif %}
