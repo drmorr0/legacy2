@@ -1,5 +1,8 @@
 from legacy import app
-from legacy.categories import SHORT_CATEGORY_DICT
+from legacy.categories import is_valid_category
+from legacy.categories import load_saved_visible_categories 
+from legacy.categories import set_category_visibility
+from legacy.categories import get_category_string
 from legacy.comparison import make_comparison_plot
 from legacy.controls import make_plot_type_buttons
 from legacy.filter_widget import make_filter_widget
@@ -65,6 +68,8 @@ def load_churches_data(conn, props, filter_value, selected):
 def plot_church_data():
 
     args = parse_args()
+    load_saved_visible_categories()
+
     conn = sql.connect('data/legacy.db')
     church_info = pd.read_sql("select * from churches", conn)
 
@@ -73,8 +78,9 @@ def plot_church_data():
     filter_widget, selected = make_filter_widget(church_info, args['filter_by'][0], args['filter_choice'][0])
 
     for prop in args['properties']:
-        if prop not in SHORT_CATEGORY_DICT.keys():
+        if not is_valid_category(prop):
             raise LegacyException("Invalid property %s" % prop)
+        set_category_visibility(prop)
 
     if args['plot_type'][0] not in PLOT_TYPES:
         raise LegacyException("Invalid plot type %s" % args['plot_type'][0])

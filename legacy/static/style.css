@@ -4,6 +4,11 @@
 h2 { font-size: 18px; margin-bottom: 5px; }
 h3 { font-size: 16px; font-weight: normal; font-style: italic; margin-top: 0; }
 
+.settings { float: right; }
+.settings a { text-decoration: none; display: flex; background: #ddd; padding: 5px; color: darkseagreen; }
+.settings a:hover { color: #ff8c00; }
+.settings img { padding-right: 10px; }
+
 .details .column-left {float: left; width: 33%; }
 .details .column-right {float: right; width: 33%; }
 .details .column-center {display: inline-block; width: 33%; }
@@ -12,3 +17,16 @@ table { padding-left: 10px; border-spacing: 0; }
 th, td { text-align: right; padding: 0 10px; }
 tr:nth-child(even) { background: #ddd; }
 tr:nth-child(odd) { background: #fff; }
+
+.church-info-page-table .category td
+{ 
+    background: #fff; 
+    text-align: left; 
+    border-bottom: 1px black solid; 
+    padding: 20px 0 2px 0;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.church-info-page-table .row:nth-child(even) { background: #ddd; }
+.church-info-page-table .row:nth-child(odd) { background: #fff; }
+.church-info-page-table .row.first-child td { padding-top: 5px; }

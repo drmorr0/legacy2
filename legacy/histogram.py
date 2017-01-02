@@ -2,7 +2,7 @@ import logging
 
 from legacy.controls import make_range_slider
 from legacy.controls import make_category_select
-from legacy.categories import SHORT_CATEGORY_DICT
+from legacy.categories import get_category_string
 from legacy.plot import apply_theme
 from legacy.plot import get_extents
 from legacy.plot import make_plot_object
@@ -47,7 +47,7 @@ def make_histogram_plot(church_data, prop):
                 right)].sort_values(prop).to_dict(orient='records') for left, right in bin_pairs
         ]
 
-    prop_string = SHORT_CATEGORY_DICT[prop]
+    prop_string = get_category_string(prop)
 
     xvals = bin_midpoints[current_year]
     yvals = [len(items) for items in hist_items[current_year]]

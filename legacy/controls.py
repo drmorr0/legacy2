@@ -1,4 +1,4 @@
-from legacy.categories import SHORT_CATEGORY_DICT
+from legacy.categories import get_visible_category_strings
 from legacy.plot import PLOT_TYPES
 
 from bokeh.models import CustomJS
@@ -34,7 +34,7 @@ def make_category_select(selected_props):
 
         children.append(Select(
             title="Choose a category...", 
-            options=list(SHORT_CATEGORY_DICT.items()), 
+            options=list(get_visible_category_strings()), 
             callback=CustomJS(code="reloadWithParams('properties', %s)" % cb_string),
             value=prop,
         ))

@@ -6,26 +6,29 @@
 
 {% block content %}
 <h1>{{ church_data['name'].iloc[-1] }} ({{ church_data['id'].iloc[-1] }})</h1>
-<table>
-    <tr><th></th>
+<table class="church-info-page-table">
+    <tr><th style="min-width: 450px"></th>
     {% for year in church_data.index %}
         <th>{{ year }}</th>
     {% endfor %}
     </tr>
 
-    {% for key in church_data.columns.values %}
-    {% if key is upper %}
-        <tr>
-            <td>{{ key }}</td>
-            {% for year in church_data.index %}
-                <td>
-                {% if church_data[key][year]|string() != "nan" %}
-                    {{ church_data[key][year]|int() }} 
-                {% endif %}
-                </td>
-            {% endfor %}
-        </tr>
-    {% endif %}
+    {% for label, group in properties.items() %}
+        <tr class="category"><td colspan="17"> {{ label }} </td></tr>
+        {% set first_child = True %}
+        {% for key, (property, __) in group.items() %}
+            <tr class="row {% if first_child %} first-child {% endif %}">
+                <td class="property">{{ property }}</td>
+                {% for year in church_data.index %}
+                    <td>
+                    {% if church_data[key][year]|string() != "nan" %}
+                        {{ church_data[key][year]|int() }} 
+                    {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+            {% set first_child = False %}
+        {% endfor %}
     {% endfor %}
 </table>
 {% endblock %}

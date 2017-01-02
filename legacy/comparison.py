@@ -2,7 +2,7 @@ import logging
 
 from legacy.controls import make_range_slider
 from legacy.controls import make_category_select
-from legacy.categories import SHORT_CATEGORY_DICT
+from legacy.categories import get_category_string
 from legacy.plot import apply_theme
 from legacy.plot import get_extents
 from legacy.plot import make_plot_object
@@ -22,8 +22,8 @@ def make_comparison_plot(church_data, props):
     churches = church_data.groupby('church_id')
 
     plot_bounds = get_extents(props[0], props[1], church_data)
-    prop0_string = SHORT_CATEGORY_DICT[props[0]]
-    prop1_string = SHORT_CATEGORY_DICT[props[1]]
+    prop0_string = get_category_string(props[0])
+    prop1_string = get_category_string(props[1])
 
     comparison_data = ColumnDataSource(data=dict(
         x=[x[1].iloc[-1] for x in churches[props[0]]],
