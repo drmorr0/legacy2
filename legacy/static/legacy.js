@@ -27,7 +27,7 @@ function makeChurchesDetailsArray(prop1, prop2, churches) {
     var details = [];
     churches.forEach(function(church) {
         var html = "<div class='church'>" +
-            "<a href='/church/" + church['church_id'] + "'>" + church['church_name'] + "</a>" +
+            "<a href='church/" + church['church_id'] + "'>" + church['church_name'] + "</a>" +
             "<table><tr><th>" + prop1 + "</th><th>" + prop2 + "</th><tr>";
         for(i = 0; i < church['x'].length; i++)
             html += "<tr><td>" + church['x'][i] + "</td>" +
