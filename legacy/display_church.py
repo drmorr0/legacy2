@@ -13,7 +13,7 @@ def load_church_data(conn, church_id):
 
 @app.route('/church/<int:church_id>')
 def display_church(church_id):
-    conn = sql.connect('/var/www/legacy2/data/legacy.db')
+    conn = sql.connect(app.config['DB_LOCATION'])
     church_data = load_church_data(conn, church_id)
     
     return flask.render_template(

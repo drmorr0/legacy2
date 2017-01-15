@@ -2,17 +2,17 @@
 
 {% block head %}
 {{ super() }}
-<script src="static/vendor/bokeh/bokeh.min.js" type="text/javascript"></script>
-<script src="static/vendor/bokeh/bokeh-widgets.min.js" type="text/javascript"></script>
-<link href="static/vendor/bokeh/bokeh.min.css" rel="stylesheet" type="text/css">
-<link href="static/vendor/bokeh/bokeh-widgets.min.css" rel="stylesheet" type="text/css">
+<script src="{{ url_for('static', filename='vendor/bokeh/bokeh.min.js') }}" type="text/javascript"></script>
+<script src="{{ url_for('static', filename='vendor/bokeh/bokeh-widgets.min.js') }}" type="text/javascript"></script> 
+<link href="{{ url_for('static', filename='vendor/bokeh/bokeh.min.css') }}" rel="stylesheet" type="text/css">
+<link href="{{ url_for('static', filename='vendor/bokeh/bokeh-widgets.min.css') }}" rel="stylesheet" type="text/css">
 {% endblock %}
 
 {% block content %}
         <div class="settings">
             <!-- Icon used under Creative Commons Attribution 3.0 License, (c) Peleg Tabib
                 https://www.iconfinder.com/icons/196912/fez_gear_preferences_settings_icon#size=128 -->
-            <a href="settings"><img src="static/settings-icon.png"></img> Settings</a>
+            <a href="settings"><img src="{{ url_for('static', filename='settings-icon.png') }}"></img> Settings</a>
         </div>
         <div class="plot">
             <h2>Data Viewer</h2>

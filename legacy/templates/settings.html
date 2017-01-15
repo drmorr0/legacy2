@@ -6,7 +6,7 @@
 
 {% block content %}
 <h1>Visibility Settings</h1>
-<form action="settings.json" method="post">
+<form action="{{ url_for('/', filename='settings.json') }}" method="post">
 {% for label, group in properties.items() %}
     <h2 class="category">{{ label }}</h2>
     {% for key, (property, visible) in group.items() %}

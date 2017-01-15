@@ -42,7 +42,7 @@ function makeChurchList(property, prop_string, churches) {
     var html = "<div class='church_list'>" + 
         "<table><tr><th>Church</th><th>" + prop_string + "</th>";
     churches.forEach(function(church) {
-        html += "<tr><td><a href='/church/" + church['church_id'] + "'>"
+        html += "<tr><td><a href='church/" + church['church_id'] + "'>"
             + church['name'] + "</a></td><td>" + church[property] + "</td>";
     });
     html += "</table></div>";
@@ -53,7 +53,7 @@ function makeChurchComparisonList(prop0_string, prop1_string, churches) {
     var html = "<div class='church_list'>" + 
         "<table><tr><th>Church</th><th>" + prop0_string + "</th><th>" + prop1_string + "</th>";
     churches.forEach(function(church) {
-        html += "<tr><td><a href='/church/" + church['church_id'] + "'>"
+        html += "<tr><td><a href='church/" + church['church_id'] + "'>"
             + church['church_name'] + "</a></td><td>" + church['x'] + "</td><td>" + church['y'] + "</td></tr>";
     });
     html += "</table></div>";

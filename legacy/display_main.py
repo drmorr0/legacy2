@@ -70,7 +70,7 @@ def plot_church_data():
     args = parse_args()
     load_saved_visible_categories()
 
-    conn = sql.connect('/var/www/legacy2/data/legacy.db')
+    conn = sql.connect(app.config['DB_LOCATION'])
     church_info = pd.read_sql("select * from churches", conn)
 
     if not validate_filters(church_info, args['filter_by'][0], args['filter_choice'][0]):
