@@ -19,11 +19,15 @@ def make_time_series_plot(church_data, prop):
     plot_bounds = get_extents('year', prop, church_data)
     prop_string = get_category_string(prop)
 
+
     time_series_data = ColumnDataSource(data=dict(
         x=[x[1] for x in churches['year']],
         y=[y[1] for y in churches[prop]],
         church_name=[church[1]['name'].iloc[-1] for church in churches],
-        delta=["{0:.1f}%".format(y[1].iloc[-1] / y[1].iloc[0] * 100 - 100) for y in churches[prop]],
+        delta=["{0:.1f}%".format(
+            y[1].iloc[-1] / y[1].iloc[0] * 100 - 100
+            if y[1].iloc[0] != 0
+            else float('nan')) for y in churches[prop]],
         church_id=[church[1]['church_id'].iloc[-1] for church in churches],
     ))
 

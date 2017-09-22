@@ -18,7 +18,7 @@ def display_settings():
 
 @app.route('/settings.json', methods=['POST'])
 def save_settings():
-    response = flask.redirect('/legacy2')
+    response = flask.redirect('/')
     response.set_cookie('categories', simplejson.dumps(flask.request.form))
     return response
 
